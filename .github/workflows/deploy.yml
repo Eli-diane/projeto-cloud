@@ -29,9 +29,9 @@ jobs:
     - uses: actions/checkout@v4
     - name: Login no Container Registry
       run: |
-        docker login https://${{ env.REGISTRY }} \
+        echo "${{ secrets.MGC_REGISTRY_PASSWORD }}" | docker login https://${{ env.REGISTRY }} \
           -u ${{ secrets.MGC_REGISTRY_USER }} \
-          -p ${{ secrets.MGC_REGISTRY_PASSWORD }}
+          --password-stdin
     - name: Build e push da imagem
       run: |
         IMAGE=${{ env.REGISTRY }}/${{ secrets.MGC_REGISTRY_NAME }}/${{ env.IMAGE_NAME }}:latest
