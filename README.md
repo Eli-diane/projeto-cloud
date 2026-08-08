@@ -1,5 +1,10 @@
 # move-tech-cloud-application-comp-3
 
+[![CI/CD](https://github.com/Eli-diane/projeto-cloud/actions/workflows/deploy.yml/badge.svg)](https://github.com/Eli-diane/projeto-cloud/actions/workflows/deploy.yml)
+[![Python](https://img.shields.io/badge/Python-3.11-blue)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115.0-green)](https://fastapi.tiangolo.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-K3s-blue)](https://k3s.io/)
+
 Ponto de partida da **Competência 3 — Desenvolvimento e Operação de Aplicações (DevOps)**.
 
 Este repositório é um template. Use-o como base para criar o seu próprio repositório e trabalhar na competência.
@@ -33,10 +38,10 @@ A aplicação armazena os dados em memória. Ainda não tem deploy na nuvem — 
 
 Ao final da Competência 3, a aplicação deve estar **versionada, conteinerizada e publicada na Magalu Cloud**.
 
-- [ ] Publicar a imagem no Container Registry da Magalu Cloud
-- [ ] Criar o manifest Kubernetes (`k8s/app.yaml`)
-- [ ] Fazer o deploy no cluster Kubernetes da Magalu Cloud
-- [ ] Configurar o pipeline de CI/CD no GitHub Actions
+- [x] Publicar a imagem no Container Registry da Magalu Cloud
+- [x] Criar o manifest Kubernetes (`k8s/app.yaml`)
+- [x] Fazer o deploy no cluster Kubernetes da Magalu Cloud
+- [x] Configurar o pipeline de CI/CD no GitHub Actions
 
 ---
 
@@ -88,3 +93,81 @@ Ao concluir esta competência, a solução de referência será publicada em:
 ---
 
 > Inspirado no tutorial [Construindo APIs robustas utilizando Python](https://github.com/luizalabs/tutorial-python-brasil) do LuizaLabs.
+
+---
+
+## O que foi adicionado neste projeto
+
+### Arquitetura da solução
+
+```mermaid
+flowchart LR
+  cliente["Usuário (navegador)"]
+  gh["GitHub Actions"]
+  subgraph mgc["Magalu Cloud"]
+    subgraph vm["VM com K3s"]
+      svc["Serviço de rede"]
+      app["Aplicação (2 pods)"]
+    end
+    db[("Banco de dados PostgreSQL")]
+    reg["Container Registry"]
+  end
+
+  cliente -->|"Faz requisições"| svc
+  svc --> app
+  app -->|"Salva dados"| db
+  gh -->|"Publica imagem"| reg
+  gh -->|"Faz deploy"| app
+  reg -->|"Puxa imagem"| app
+```
+
+[Documentação completa da arquitetura](docs/architecture.md)
+
+### Estrutura do projeto
+
+```
+projeto-cloud/
+├── .github/workflows/    # Pipeline CI/CD
+├── app/                  # Código da API
+│   ├── main.py           # Endpoints FastAPI
+│   ├── models.py         # Modelos de dados
+│   └── database.py       # Conexão com banco
+├── docs/                 # Documentação
+│   ├── architecture.md   # Arquitetura da solução
+│   ├── data-model.md     # Modelagem de dados
+│   └── adr/              # Decisões técnicas (ADRs)
+├── k8s/                  # Manifests Kubernetes
+│   └── app.yaml
+├── tests/                # Testes automatizados
+├── Dockerfile
+├── docker-compose.yml
+├── pyproject.toml
+└── README.md
+```
+
+### Tecnologias utilizadas
+
+| Camada | Tecnologia |
+|--------|------------|
+| **Linguagem** | Python 3.11 |
+| **Framework** | FastAPI |
+| **Banco de dados** | PostgreSQL (DBaaS Magalu) |
+| **Orquestração** | Kubernetes K3s |
+| **CI/CD** | GitHub Actions |
+| **Monitoramento** | Prometheus + Grafana |
+| **Container Registry** | Magalu Cloud Registry |
+| **Infraestrutura** | Magalu Cloud (VPC, VM, Security Groups) |
+
+### Documentação adicional
+
+- [Arquitetura da solução](docs/architecture.md)
+- [Decisões técnicas (ADRs)](docs/adr/)
+- [Modelo de dados](docs/data-model.md)
+
+---
+
+## Sobre o projeto
+
+Este projeto foi desenvolvido como parte da formação **Move Tech** — uma parceria entre **Magalu** e **Prósper Digital Skills** para capacitação em Cloud Computing.
+
+O repositório evoluiu ao longo de 6 competências, abordando desde versionamento de código até observabilidade e arquitetura de soluções em nuvem.
